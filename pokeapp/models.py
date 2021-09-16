@@ -9,40 +9,42 @@ class Pokemon(models.Model):
     name = models.CharField(max_length=200)
     height = models.IntegerField()
     weight = models.IntegerField()
-    stats = models.ForeignKey(
+    stats = models.OneToOneField(
         'Stats',
         on_delete = models.SET_NULL,
         null = True
     )
-    evolution_chain = models.ForeignKey(
+    evolution_chain = models.OneToOneField(
         'EvolutionChain', 
         null = True, 
         on_delete = models.SET_NULL, 
-        related_name = 'evolution_chain'
+    #    related_name = 'evolution_chain'
     )
 
 
 class EvolutionChain(models.Model):    
-    evolutions = models.ForeignKey(
+    evolutions = models.OneToOneField(
         'EvolsTo',  
-        on_delete = models.CASCADE, 
-        related_name = 'evolutions'
+        on_delete = models.CASCADE,
+        null = True, 
+    #    related_name = 'evolutions'
     )
     
 
 class EvolsTo(models.Model):
-    pokemon = models.ForeignKey(
+    pokemon = models.OneToOneField(
         'Pokemon', 
         null = True, 
         on_delete = models.CASCADE, 
-        related_name = 'pokemon'
+    #    related_name = 'pokemon'
     )
-    evols_to = models.ForeignKey(
+    evols_to = models.OneToOneField(
         'self',
         null = True,
         on_delete = models.CASCADE, 
         #related_name = 'evols_to'
     )
+
 
 class Stats(models.Model):
     hp = models.IntegerField()
