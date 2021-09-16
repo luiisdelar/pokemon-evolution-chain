@@ -11,16 +11,38 @@ class Pokemon(models.Model):
     weight = models.IntegerField()
     stats = models.ForeignKey(
         'Stats',
-        on_delete=models.SET_NULL,
-        null=True
+        on_delete = models.SET_NULL,
+        null = True
     )
     evolution_chain = models.ForeignKey(
         'EvolutionChain', 
-        null=True, 
-        on_delete=models.SET_NULL, 
-        related_name='evolution_chain'
+        null = True, 
+        on_delete = models.SET_NULL, 
+        related_name = 'evolution_chain'
     )
 
+
+class EvolutionChain(models.Model):    
+    evolutions = models.ForeignKey(
+        'EvolsTo',  
+        on_delete = models.CASCADE, 
+        related_name = 'evolutions'
+    )
+    
+
+class EvolsTo(models.Model):
+    pokemon = models.ForeignKey(
+        'Pokemon', 
+        null = True, 
+        on_delete = models.CASCADE, 
+        related_name = 'pokemon'
+    )
+    evols_to = models.ForeignKey(
+        'self',
+        null = True,
+        on_delete = models.CASCADE, 
+        #related_name = 'evols_to'
+    )
 
 class Stats(models.Model):
     hp = models.IntegerField()
@@ -29,20 +51,3 @@ class Stats(models.Model):
     special_attack = models.IntegerField()
     special_defense = models.IntegerField()
     speed = models.IntegerField()
-    
-    
-class EvolutionChain(models.Model):
-    min_level = models.IntegerField()
-    evols_to = models.ForeignKey(
-        'Pokemon', 
-        null=True, 
-        on_delete=models.CASCADE, 
-        related_name='evols_to'
-    )
-    prevols_to = models.ForeignKey(
-        'Pokemon', 
-        null=True, 
-        on_delete=models.CASCADE, 
-        related_name='prevols_to'
-    )
-

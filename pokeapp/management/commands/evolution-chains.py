@@ -9,7 +9,6 @@ class Command(BaseCommand):
         
         self.create_evolution_chain(evolution_chain['chain'])
         
-        
     def add_arguments(self, parser):
         parser.add_argument(
             'id',
@@ -19,8 +18,9 @@ class Command(BaseCommand):
             help='id of evolution chain',
         )
     
-    def get_pokemon(self, url):
+    def create_pokemon(self, url, prev_evolution = None, next_evolution = None):
         specie = requests.get(url).json()
+        
         for item in specie['varieties']:
             pokemon = requests.get(item['pokemon']['url']).json()
             print(f' se tranforma en {pokemon["name"]}')
@@ -43,14 +43,24 @@ class Command(BaseCommand):
             #     stats = stats
             # )
             
+            evol_chain = EvolutionChain.objects.creaet(
+                evols_to = next_evolution,
+                prevols_to = prev_evolution
+            )
+
             # return obj_pokemon
             break
 
-    def create_evolution_chain(self, chain, pokemon = None):
+    def create_evolution_chain(self, chain, prev_pokemon = None, next_pokemon = None):
         print(chain['species']['name'], end='')
         
         if chain['evolves_to']:
             for item in chain['evolves_to']:
-                pokemon = self.get_pokemon(item['species']['url'])            
+                pokemon = self.create_pokemon(
+                    item['species']['url'], 
+                    prev_evolution = prev_pokemon, 
+                    next_evolution = next_pokemon
+                )            
+                
                 if item['evolves_to']:
                     self.create_evolution_chain(item, pokemon)
