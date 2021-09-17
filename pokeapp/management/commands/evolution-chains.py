@@ -17,6 +17,7 @@ class Command(BaseCommand):
             evolution_chain = requests.get(f'https://pokeapi.co/api/v2/evolution-chain/{options["id"]}/').json()    
         except:
             print("Error, incorrect id")
+            return None
         
         self.evol_chain = EvolutionChain.objects.create()
         self.create_evolution_chain(chain = evolution_chain['chain'])
