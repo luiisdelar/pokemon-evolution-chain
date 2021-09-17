@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand, CommandError
 import requests
 from pokeapp.models import EvolsTo, Pokemon, Stats, EvolutionChain
+from django.db.utils import *
 
 class Command(BaseCommand):
     evol_chain = ''
@@ -9,9 +10,17 @@ class Command(BaseCommand):
         """
             Logic and function call after executing the command
         """
-        evolution_chain = requests.get(f'https://pokeapi.co/api/v2/evolution-chain/{options["id"]}/').json()
+        if not options["id"]:
+            options["id"] = 1
+        
+        try:
+            evolution_chain = requests.get(f'https://pokeapi.co/api/v2/evolution-chain/{options["id"]}/').json()    
+        except:
+            print("Error, incorrect id")
+        
         self.evol_chain = EvolutionChain.objects.create()
         self.create_evolution_chain(chain = evolution_chain['chain'])
+        
         
     def add_arguments(self, parser):
         """
@@ -51,14 +60,20 @@ class Command(BaseCommand):
                 speed = pokemon['stats'][5]['base_stat'],
             )
             
-            obj_pokemon = Pokemon.objects.create(
-                iid = pokemon["id"],
-                name = pokemon["name"],
-                height = pokemon["height"],
-                weight = pokemon["weight"],
-                stats = stats,
-                evolution_chain = self.evol_chain
-            )
+            try:
+                obj_pokemon = Pokemon.objects.create(
+                    iid = pokemon["id"],
+                    name = pokemon["name"],
+                    height = pokemon["height"],
+                    weight = pokemon["weight"],
+                    stats = stats,
+                    evolution_chain = self.evol_chain
+                )
+            except:
+                stats.delete()
+                print('The data for this evolution chain already exists')
+                return None, None
+            
             
             if evol_to:
                 evol_to.pokemon = preevolution

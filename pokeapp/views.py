@@ -56,5 +56,9 @@ def search(request, to_search):
                 "evols_to": None
             }
         cont += 1
+        
+    if json == {}:
+        return JsonResponse({"message":"Pokemons not found"})
+    
     return JsonResponse(json)
         
