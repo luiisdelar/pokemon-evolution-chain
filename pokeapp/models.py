@@ -14,11 +14,11 @@ class Pokemon(models.Model):
         on_delete = models.SET_NULL,
         null = True
     )
-    evolution_chain = models.OneToOneField(
+    evolution_chain = models.ForeignKey(
         'EvolutionChain', 
         null = True, 
         on_delete = models.SET_NULL, 
-    #    related_name = 'evolution_chain'
+        related_name = 'evolution_chain'
     )
 
 

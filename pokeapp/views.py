@@ -9,7 +9,8 @@ def index(request, search):
     json = {}
     
     pokemons = Pokemon.objects.filter(name__icontains=search)
-    
+    for po in pokemons:
+        print(po.name)
     for pokemon in pokemons:
         index = f'pokemon-{pokemon.iid}'
         json[index] = ({ 
@@ -24,13 +25,19 @@ def index(request, search):
             "special_defense": pokemon.stats.special_defense,
             "speed": pokemon.stats.speed
         })
-       # print(pokemon.evolsto.evols_to.pokemon.name)
+        
+        evolution1 = pokemon.evolution_chain.evolutions
+        evolution2 = evolution1.evols_to
+        
+        #print(pokemon.evolsto.evols_to.pokemon.name)
         #json[index]["evolution_type"] = pokemon.evolsto.pokemon.name
-        break
-        #print(pokemon.name) 
-
-    print(json)
+        
+        if evolution2.evols_to:
+            return HttpResponse(f'{evolution1.pokemon.name} -> {evolution2.pokemon.name} -> {evolution2.evols_to.pokemon.name}')
+        else:
+            return HttpResponse(f'{evolution1.pokemon.name} -> {evolution2.pokemon.name} ')
+    #print(json)
     #    return render(request, "index.html", {'pokemon': pokemon})
     
-    return HttpResponse("Nada")
+    #return HttpResponse("Nada")
         
