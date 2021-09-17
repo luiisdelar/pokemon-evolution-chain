@@ -84,4 +84,4 @@ http://localhost:8000/pokemon/{pokemon_name}
 ```
 
 ---
-⌨️ con ❤️ por [Luis Ortega](https://github.com/luiisdelar) 😊
+⌨️ hecho por [Luis Ortega](https://github.com/luiisdelar) 😊
