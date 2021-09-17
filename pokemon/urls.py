@@ -15,9 +15,9 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from pokeapp.views import index
+from pokeapp.views import search
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('pokemon/<str:search>', index),
+    path('pokemon/<str:to_search>', search),
 ]

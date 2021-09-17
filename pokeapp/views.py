@@ -1,19 +1,28 @@
-from django.http.response import HttpResponse, JsonResponse
+from django.http.response import JsonResponse
 from django.shortcuts import render
-import requests
-from pokeapp.models import EvolsTo, Pokemon
+from pokeapp.models import Pokemon
+from django.http import JsonResponse
 
 # Create your views here.
 
-def index(request, search):
+def search(request, to_search):
+    """ search for pokemons matching keyword to_search
+
+    Args:
+        request (Request): request 
+        to_search (str): parameter to search received by url
+
+    Returns:
+        JsonResponse: object of type json with pokemons matches
+    """
     json = {}
+    cont = 0
+    pokemons = Pokemon.objects.filter(name__icontains=to_search)
     
-    pokemons = Pokemon.objects.filter(name__icontains=search)
-    for po in pokemons:
-        print(po.name)
     for pokemon in pokemons:
         index = f'pokemon-{pokemon.iid}'
-        json[index] = ({ 
+       
+        json[cont] = ({ 
             "id": pokemon.iid,
             "name": pokemon.name, 
             "height": pokemon.height,
@@ -29,15 +38,23 @@ def index(request, search):
         evolution1 = pokemon.evolution_chain.evolutions
         evolution2 = evolution1.evols_to
         
-        #print(pokemon.evolsto.evols_to.pokemon.name)
-        #json[index]["evolution_type"] = pokemon.evolsto.pokemon.name
+        evolution_sub_json = { 
+            "pokemon": evolution2.pokemon.name, 
+            "evols_to": None 
+        }        
+        
+        evolution_json = {
+            "pokemon": evolution1.pokemon.name,
+            "evols_to": evolution_sub_json
+        }
+        
+        json[cont]["evolution_chain"] = evolution_json
         
         if evolution2.evols_to:
-            return HttpResponse(f'{evolution1.pokemon.name} -> {evolution2.pokemon.name} -> {evolution2.evols_to.pokemon.name}')
-        else:
-            return HttpResponse(f'{evolution1.pokemon.name} -> {evolution2.pokemon.name} ')
-    #print(json)
-    #    return render(request, "index.html", {'pokemon': pokemon})
-    
-    #return HttpResponse("Nada")
+            evolution_sub_json["evols_to"] = {
+                "pokemon":evolution2.evols_to.pokemon.name,
+                "evols_to": None
+            }
+        cont += 1
+    return JsonResponse(json)
         
