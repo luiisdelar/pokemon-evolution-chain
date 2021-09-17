@@ -13,7 +13,7 @@ git clone https://github.com/luiisdelar/pokemon-evolution-chain.git
 ### Create / Activate development environment (Windows)
 
 ```
-$ virtualenv env
+virtualenv env
 ```
 
 _Then you must activate the development environment_
