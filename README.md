@@ -34,7 +34,7 @@ cd pokemon-evolution-chain/
 _Now we must install the project requirements_
 
 ```
-$ pip install -r requirements.txt
+pip install -r requirements.txt
 ```
 
 ### Database Postgres
