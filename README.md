@@ -26,7 +26,6 @@ _Finally we are located inside the project folder_
 
 ```
 $ cd pokemon-evolution-chain/
-
 ```
 
 
