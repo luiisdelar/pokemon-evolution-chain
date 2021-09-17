@@ -6,7 +6,7 @@ _Backend test_
 ### Clone repository 
 
 ```
-$ git clone https://github.com/luiisdelar/pokemon-evolution-chain.git
+git clone https://github.com/luiisdelar/pokemon-evolution-chain.git
 ```
 
 
@@ -19,13 +19,13 @@ $ virtualenv env
 _Then you must activate the development environment_
 
 ```
-$ source env/Scripts/activate
+source env/Scripts/activate
 ```
 
 _Finally we are located inside the project folder_
 
 ```
-$ cd pokemon-evolution-chain/
+cd pokemon-evolution-chain/
 ```
 
 
@@ -50,7 +50,7 @@ db_pokemon
 _Now the tables are created in the database with the migration_
 
 ```
-$ python manage.py migrate
+python manage.py migrate
 ```
 
 # Command "evolution-chains"
@@ -58,13 +58,13 @@ $ python manage.py migrate
 _To execute the command that saves the data of the evolution chain we use the following command that receives an id as an argument, in example 1_
 
 ```
-$ python manage.py evolution-chains 1
+python manage.py evolution-chains 1
 ```
 
 _For more info about command type_
 
 ```
-$ python manage.py evolution-chains --help
+python manage.py evolution-chains --help
 ```
 
 _After this you would have the info of the pokemons of the evolution chain stored in the database_
@@ -74,7 +74,7 @@ _After this you would have the info of the pokemons of the evolution chain store
 _At this point we must turn on the server to have the service active_
 
 ```
-$ python manage.py runserver
+python manage.py runserver
 ```
 
 _to search for pokemons we must use the following route which receives the name of a pokemon by parameter, it returns the possible matches in JSON format_
