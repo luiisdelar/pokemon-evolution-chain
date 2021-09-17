@@ -3,19 +3,21 @@ import requests
 from pokeapp.models import EvolsTo, Pokemon, Stats, EvolutionChain
 
 class Command(BaseCommand):
-    evol_chain = ''
-    cont = True
+    evol_chain = None
     
     def handle(self, *args, **options):
+        """
+            Logic and function call after executing the command
+        """
+        
         evolution_chain = requests.get(f'https://pokeapi.co/api/v2/evolution-chain/{options["id"]}/').json()
-
-        self.evol_chain = EvolutionChain.objects.create()
-        #print(evolution_chain['chain']['species']['url'])
-        pokemon, evol_to = self.create_pokemon(url = evolution_chain['chain']['species']['url'])
-        self.create_evolution_chain(chain = evolution_chain['chain'], preevolution=pokemon, evol_to=evol_to)
-        #self.create_evolution_chain(chain = evolution_chain)
+        self.evol_chain = EvolutionChain()
+        self.create_evolution_chain(chain = evolution_chain['chain'])
         
     def add_arguments(self, parser):
+        """
+            Entry point for subclassed commands to add custom arguments.
+        """
         parser.add_argument(
             'id',
             nargs='?',
@@ -25,11 +27,21 @@ class Command(BaseCommand):
         )
     
     def create_pokemon(self, url, preevolution = None, evol_to = None):
+        """Create pokemon and its possible evolution 
+
+        Args:
+            url (str): request url to api
+            preevolution (Pokemon, optional): pre evolution of pokemon. Defaults to None.
+            evol_to (EvolsTo, optional): evolution of the pokemon if it has. Defaults to None.
+
+        Returns:
+            pokemon: pokemon created
+            evol_to: evolution of pokemon
+        """
         specie = requests.get(url).json()
 
         for item in specie['varieties']:
             pokemon = requests.get(item['pokemon']['url']).json()
-            #print(f' se tranforma en {pokemon["name"]}')
             
             stats = Stats.objects.create(
                 hp = pokemon['stats'][0]['base_stat'],
@@ -46,7 +58,7 @@ class Command(BaseCommand):
                 height = pokemon["height"],
                 weight = pokemon["weight"],
                 stats = stats,
-                evolution_chain = self.evol_chain
+                #evolution_chain = self.evol_chain
             )
             
             if evol_to:
@@ -60,22 +72,25 @@ class Command(BaseCommand):
                 evol_to = EvolsTo.objects.create(pokemon = obj_pokemon)
                 self.evol_chain.evolutions = evol_to
                 self.evol_chain.save()
-    
+
+            obj_pokemon.evolution_chain = self.evol_chain
+            obj_pokemon.save()
             print(f'Save data of: {obj_pokemon.name}')
             return obj_pokemon, evol_to
             
     def create_evolution_chain(self, chain, preevolution = None, evol_to = None):
-        #print(chain['species']['name'], end='')
+        """ Create chain evolution
+
+        Args:
+            chain (dict): [description]
+            preevolution (Pokemon, optional): pre evolution pokemon. Defaults to None.
+            evol_to (EvolTo, optional): possible. Defaults to None.
+        """
+        pokemon, evol_to = self.create_pokemon(
+            chain['species']['url'],
+            preevolution = preevolution,
+            evol_to = evol_to 
+        )
         
-         
         if chain['evolves_to']:
-            for item in chain['evolves_to']:
-                pokemon, evol_to = self.create_pokemon(
-                    item['species']['url'],
-                    preevolution = preevolution,
-                    evol_to = evol_to 
-                )
-                          
-                if item['evolves_to']:
-                    # evol_pokemon add evol_to pokemon
-                    self.create_evolution_chain(chain = item, preevolution = pokemon, evol_to = evol_to)
+            self.create_evolution_chain(chain['evolves_to'][0], preevolution = pokemon, evol_to = evol_to)

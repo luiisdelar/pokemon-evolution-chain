@@ -36,7 +36,7 @@ class EvolsTo(models.Model):
         'Pokemon', 
         null = True, 
         on_delete = models.CASCADE, 
-    #    related_name = 'pokemon'
+        #related_name = 'xxx'
     )
     evols_to = models.OneToOneField(
         'self',

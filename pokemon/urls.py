@@ -19,5 +19,5 @@ from pokeapp.views import index
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('evolution-chain/<int:pk>', index),
+    path('pokemon/<str:search>', index),
 ]
